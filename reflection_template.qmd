@@ -132,21 +132,26 @@ cali_joined <- left_join(cali_mutated, house_prices, by = "region")
 
 ```
 
+-   I didn't use any of the rest of the join's in any of my work, but i found some examples through documentation.
 -   `right_join()`
 
 ```{r wd-5-right}
+df1 <- data.frame(id = c(1, 2, 3, 4, 5), name = c("Alice", "Bob", "Charlie", "Dave", "Eve"))
+df2 <- data.frame(id = c(2, 4, 6), age = c(25, 35, 45))
 
+df3 <- right_join(df1, df2, by = "id")
 ```
 
 -   `inner_join()`
 
 ```{r wd-5-inner}
-
+df3 <- inner_join(df1, df2, by = "id")
 ```
 
 -   `full_join()`
 
 ```{r wd-5-full}
+df3 <- full_join(df1, df2, by = "id")
 
 ```
 
@@ -155,13 +160,14 @@ cali_joined <- left_join(cali_mutated, house_prices, by = "region")
 -   `semi_join()`
 
 ```{r wd-6-semi}
+df3 <- semi_join(df1, df2, by = "id")
 
 ```
 
 -   `anti_join()`
 
 ```{r wd-6-anti}
-
+df3 <- anti_join(df1, df2, by = "id")
 ```
 
 **WD-7: I can pivot dataframes from long to wide and visa versa**
@@ -596,6 +602,10 @@ In general, when learning a new programming language like R, the process of revi
 
 <!-- How did you extended your thinking throughout the course? How did you extend your thinking on the code examples you have provided in your portfolio? -->
 
+I often found my self extending my thinking when I was in the situation where i thought my code was the best case in what i was trying to depict with the given data set, but i was actually incorrect and through the feedback I was getting, i was able to extend my thinking and do better upon re-submission. This has happened to me a few times, the challenges are also left pretty open ended a lot of times so it allows me to extend my thinking in how I would like to approach the problem. This is shown in my code snippets above from my challenges.
+
 ## Peer Support & Collaboration
 
 <!-- Include an image of feedback you gave that you are proud of (either in a peer review or in Discord) -->
+
+![I think this is a great example of good feedback from me to my peers because in most cases my classmates are doing a very good job with their code but they still have smaller aesthetic mishaps that they could fix in the future. I try to do my best helping my classmates outside of class when it comes to discord and within our practice activities I have always did my best to contribute to the group.](images/image-772281870.png)
