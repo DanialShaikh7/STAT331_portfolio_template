@@ -11,7 +11,7 @@ execute:
   echo: true
 ---
 
-[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an \_\_.
+[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an **90%**.
 
 [**Learning Objective Evidence:**]{.underline} In the code chunks below, provide code from a Lab or Challenge assignment where you believe you have demonstrated proficiency with the specified learning target. Be sure to specify **where** the code came from (e.g., Lab 4 Question 2).
 
@@ -22,84 +22,113 @@ execute:
 -   `csv`
 
 ```{r wd-1-csv}
+my_data <- read.csv("path/to/my/csv/file.csv")
+surveys <- read_csv(here("Week2","Lab2","surveys.csv"))
 
 ```
 
 -   `xlsx`
 
 ```{r wd-1-xlsx}
-
+military <- read_xlsx(here::here("data", 
+                                 "gov_spending_per_capita.xlsx"), 
+                      sheet = , 
+                      skip = , 
+                      nmax = )
 ```
 
 -   `txt`
 
 ```{r wd-1-txt}
+my_text <- readLines("path/to/my/txt/file.txt")
 
 ```
 
 **WD-2: I can select necessary columns from a dataset.**
 
 ```{r wd-2}
-
+colleges_clean <- colleges |> 
+  select(INSTNM, CITY, STABBR, ZIP,
+         ADM_RATE, SAT_AVG, UGDS,
+         TUITIONFEE_IN, TUITIONFEE_OUT,
+         CONTROL, REGION) 
 ```
+
+In PA3 Data cleaning step 1 we displayed selecting specific columns from a dataset.
 
 **WD-3: I can filter rows from a dataframe for a *variety* of data types (e.g., numeric, integer, character, factor, date).**
 
--   numeric
+-   numeric- Lab 4 Q3
 
 ```{r wd-3-numeric}
+clean_avocado |> 
+  semi_join(regions_major, by = "region") |>
+ filter(year == 2017 ,  
+          type == "organic") |>
+  group_by(region) |>
 
 ```
 
--   character -- specifically a string
+-   character -- specifically a string - Lab 4 Q 6
 
 ```{r wd-3-string}
+cali <- avocado_clean |> 
+  filter(region %in% c("LosAngeles", "SanDiego", "Sacramento", "SanFrancisco"))
+
 
 ```
 
--   factor
+-   factor Lab 4 Q7
 
 ```{r wd-3-factor}
-
+cali_mutated <- mutate(cali_gathered, 
+                       Size = factor(Size, 
+                                     levels = c("Size_Small", "Size_Large", "Size_XL"),
+                                     labels = c("Small", "Large", "Extra Large"))
 ```
 
--   date
+-   date-Lab 5 Q1
 
 ```{r wd-3-date}
-
+surveys$date <- with(surveys, as.Date(paste(year, month, day, sep="-"), format = "%Y-%m-%d"))
 ```
 
 **WD-4: I can modify existing variables and create new variables in a dataframe for a *variety* of data types (e.g., numeric, integer, character, factor, date).**
 
--   numeric
+-   numeric- Lab 1 Q3
 
 ```{r wd-4-numeric}
 
+dist<-cars[,2]
+plot(dist, xlab='Stopping distance (ft)')
 ```
 
--   character -- specifically a string
+-   character -- specifically a string- Lab 4 Q 2
 
 ```{r wd-4-string}
-
+major_regions <- c("Plains", "Midsouth", "West", "SouthCentral", "Northeast", "Southeast")
 ```
 
--   factor
+-   factor Lab 4 Q 7
 
 ```{r wd-4-factor}
-
+ Size = factor(Size, 
+                                     levels = c("Size_Small", "Size_Large", "Size_XL"),
 ```
 
--   date
+-   date- Lab 4 Q 4
 
 ```{r wd-4-date}
-
+  separate(Date, into = c("Year", "Month", "Day"), sep = "-") |>
+  group_by(Month) |>
 ```
 
 **WD-5: I can use mutating joins to combine multiple dataframes.**
 
--   `left_join()`
+-   `left_join() challenge 4`
 
 ```{r wd-5-left}
+cali_joined <- left_join(cali_mutated, house_prices, by = "region")
 
 ```
 
@@ -137,16 +166,19 @@ execute:
 
 **WD-7: I can pivot dataframes from long to wide and visa versa**
 
--   `pivot_longer()`
+-   `pivot_longer() PA4`
 
 ```{r wd-7-long}
+longer_df <- pivot_longer(wider_df, cols = 2:4, names_to = "year", values_to = "value")
 
 ```
 
--   `pivot_wider()`
+-   `pivot_wider() Lab 4 Q 6`
 
 ```{r wd-7-wide}
-
+  pivot_wider(names_from = type, values_from = average_price, values_fill = 0) |>
+  mutate(
+    price_difference = organic - conventional
 ```
 
 ## Reproducibility
@@ -157,153 +189,314 @@ I've done this in the following provided assignments:
 
 **R-2: I can write well documented and tidy code.**
 
--   Example 1
+This chunk of code is tidy and organized because it follows the principles of the tidyverse framework, which emphasizes writing code that is easy to read and understand.
+
+First, the code uses the pipe operator (**`|>`**) to chain together a series of data manipulation functions. This makes the code more readable by allowing the reader to follow the logical flow of the data transformations.
+
+Second, the code uses descriptive variable names, which maks it easier to understand what the code is doing. For example, **`male_vs_female`** and **`white_vs_non_white`** are clear and concise names for the variables that store the output of the **`summarise()`** and **`mutate()`** functions.
+
+Third, the code follows the "single responsibility principle", which means that each line of code has a specific task to accomplish. For example, the first two lines of code calculate the mean number of artists for each genre and sex, while the third line calculates the difference between the male and female means. This makes the code easier to understand and debug.
+
+Finally, the code uses consistent formatting, such as indenting and spacing, which also makes it easier to read and understand.
+
+-   Example 1 Lab 4 Q 4
 
 ```{r r-2-1}
-
+{r}
+avocado_clean |>
+  separate(Date, into = c("Year", "Month", "Day"), sep = "-") |>
+  group_by(Month) |>
+  summarize(tot_sales = sum(`Total Volume`)) |>
+  arrange(desc(tot_sales)) |>
+  slice(1)
 ```
 
--   Example 2
+-   Example 2 Challenge 3
 
 ```{r r-2-2}
+male_vs_female <- hiphopClean |> 
+  group_by(sex, genre) |> 
+  summarise(mean_artists = mean(artists)) |> 
+  mutate(diff = male - female)
 
+white_vs_non_white <- hiphopClean |> 
+  group_by(race, genre) |>
+  summarise(mean_artists = mean(artists)) |>
+  mutate(diff = White - Non.White)
+
+male_vs_female_genre <- male_vs_female |> 
+  slice(1) |> 
+  select(genre)
+
+white_vs_non_white_genre <- white_vs_non_white |> 
+  slice(1) |> 
+  select(genre)
 ```
 
 **R-3: I can write robust programs that are resistant to changes in inputs.**
 
--   Example 1
+-   Example 1 Challenge 3
 
 ```{r r-3-1}
+male_vs_female <- hiphopClean |> 
+  group_by(sex, genre) |> 
+  summarise(mean_artists = mean(artists)) |> 
+  mutate(diff = male - female)
 
+white_vs_non_white <- hiphopClean |> 
+  group_by(race, genre) |>
+  summarise(mean_artists = mean(artists)) |>
+  mutate(diff = White - Non.White)
+
+male_vs_female_genre <- male_vs_female |> 
+  slice(1) |> 
+  select(genre)
+
+white_vs_non_white_genre <- white_vs_non_white |> 
+  slice(1) |> 
+  select(genre)
 ```
 
--   Example 2
+-   Example 2 Lab 3 Q 11
 
 ```{r r-3-2}
+hiphopClean |> 
+  filter(age < 20) |> 
+  group_by(word) |> 
+  summarize(mean_familiarity = mean(familiarity)) |> 
+  slice_max(mean_familiarity)
 
+hiphopClean |> 
+  filter(age < 20) |> 
+  group_by(word) |> 
+  summarize(mean_familiarity = mean(familiarity)) |>
+  slice_min(mean_familiarity)
 ```
+
+These chunks of code is resistant to changes in inputs because it is a pipeline of data transformation functions that operate on the same input dataset no matter what is inside. Each function in the pipeline takes the output of the previous function and applies further transformations, ultimately producing a final output.
 
 ## Data Visualization & Summarization
 
 **DVS-1: I can create visualizations for a *variety* of variable types (e.g., numeric, character, factor, date)**
 
--   numeric variables
+-   numeric variables Lab 3 q 10
 
 ```{r dvs-1-num}
-
+ggplot(data = people, aes(x = age)) + 
+  geom_histogram(binwidth = 5) + 
+  ggtitle("Distribution of Ages") + 
+  xlab("Age") + 
+  ylab("Count")
 ```
 
--   numeric variables and categorical variables
+-   numeric variables and categorical variables lab 4 q 6
 
 ```{r dvs-2-num-cat}
+cali <- avocado_clean |> 
+  filter(region %in% c("LosAngeles", "SanDiego", "Sacramento", "SanFrancisco"))
 
+ggplot(data = cali, aes(x = region, y = AveragePrice, fill = type)) + 
+  geom_boxplot() +
+  ggtitle("Prices of Avocados in different California Regions")
 ```
 
--   categorical variables
+-   categorical variables challenge 2 q 13
 
 ```{r dvs-2-cat}
-
+# Code for Challenge 1
+ ggplot(data = surveys)+geom_density_ridges(mapping = aes(x=weight, y=species,color=species))
+ 
 ```
 
--   dates
+-   dates Lab 5 Q 4
 
 ```{r dvs-2-date}
-
+surveys$date <- with(surveys, as.Date(paste(year, month, day, sep="-"), format = "%Y-%m-%d"))
+ggplot(data = surveys, mapping = aes(x = date, y = weight, color = genus)) +
+    geom_line() +
+    scale_x_date(limits = range(surveys$date), expand = c(0, 0)) +
+    scale_y_continuous(limits = range(surveys$weight), expand = c(0, 0)) +
+    labs(x = "Date", y = "Weight") +
+    theme_classic() +
+    theme(legend.position = "bottom")
 ```
 
 **DVS-2: I use plot modifications to make my visualization clear to the reader.**
 
--   Example 1
+-   Example 1 Lab 4 Q 4
 
 ```{r dvs-2-1}
+grouped_data <- surveys %>% 
+  group_by(year, genus) %>% 
+  summarize(mean_weight = mean(weight), .groups = "drop")
 
+grouped_data$genus <- fct_reorder(grouped_data$genus, grouped_data$mean_weight)
+
+p <- ggplot(data = grouped_data, mapping = aes(x = year, y = mean_weight, color = genus)) +
+  geom_line() +
+  scale_x_continuous(limits = range(grouped_data$year), expand = c(0, 0)) +
+  scale_y_continuous(limits = range(grouped_data$mean_weight), expand = c(0, 0)) +
+  labs(x = "Year", y = "Mean Weight") +
+  ggtitle("Mean Weight Over Time")
+  theme_classic() +
+  theme(legend.position = "bottom")
 ```
 
--   Example 2
+-   Example 2 Lab 5 Q 3.1
 
 ```{r dvs-2-2}
-
+surveys$day_of_week <- factor(surveys$day_of_week, levels = c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "NA"))
+ggplot(surveys, aes(x = day_of_week)) + 
+  geom_bar() + coord_flip()+
+  xlab("Day of Week") + 
+  ylab("Number of Rodents") + 
+  ggtitle("Number of Rodents Captured Each Day of the Week")
 ```
 
 **DVS-3: I show creativity in my visualizations**
 
--   Example 1
+-   Example 1 Lab 4 q 4
 
 ```{r dvs-3-1}
+grouped_data <- surveys %>% 
+  group_by(year, genus) %>% 
+  summarize(mean_weight = mean(weight), .groups = "drop")
 
+grouped_data$genus <- fct_reorder(grouped_data$genus, grouped_data$mean_weight)
+
+p <- ggplot(data = grouped_data, mapping = aes(x = year, y = mean_weight, color = genus)) +
+  geom_line() +
+  scale_x_continuous(limits = range(grouped_data$year), expand = c(0, 0)) +
+  scale_y_continuous(limits = range(grouped_data$mean_weight), expand = c(0, 0)) +
+  labs(x = "Year", y = "Mean Weight") +
+  ggtitle("Mean Weight Over Time")
+  theme_classic() +
+  theme(legend.position = "bottom")
 ```
 
--   Example 2
+-   Example 2 Chellenge 2 Q 13
 
 ```{r dvs-3-2}
-
+# Code for Challenge 1
+ ggplot(data = surveys)+geom_density_ridges(mapping = aes(x=weight, y=species,color=species))
 ```
 
 **DVS-4: I can calculate numerical summaries of variables.**
 
--   Example 1
+-   Example 1 Lab 4 Q 2.1
 
 ```{r dvs-4-1}
-
+major_regions |> 
+  filter(type == "organic", year == 2017) |>
+  group_by(region) |>
+  summarize(tot_small_bags = sum(Small)) |>
+  arrange(desc(tot_small_bags)) |>
+  slice(1)
 ```
 
--   Example 2
+-   Example 2 Lab 3 Q 12
 
 ```{r dvs-4-2}
-
+hiphopClean |>
+  filter(ethnic != "White" & sex == "Female")|>
+  group_by(word) |>
+  summarize(mean_familiarity = mean(familiarity)) |>
+  slice_min(mean_familiarity
 ```
 
 **DVS-5: I can find summaries of variables across multiple groups.**
 
--   Example 1
+-   Example 1 Lab 3 q 13
 
 ```{r dvs-5-1}
-
+hiphopClean |>
+  filter(ethnic == "White" & sex == "Male" & age > 30) |>
+  group_by(word) |>
+  summarize(mean_familiarity = mean(familiarity)) |>
+  slice_min(mean_familiarity)
 ```
 
--   Example 2
+-   Example 2 Lab 3 q 14
 
 ```{r dvs-5-2}
+subset_df <- hiphop %>% 
+  filter(ethnic == "white" & sex == "Male" & age >= 17 & age <= 23 & 
+           familiarity == min(familiarity[ethnic == "white" & sex == "Male" & age >= 17 & age <= 23]))
 
+subset_df
 ```
 
 **DVS-6: I can create tables which make my summaries clear to the reader.**
 
--   Example 1
+-   Example 1 Lab 3 q 14
 
 ```{r dvs-6-1}
+subset_df <- hiphop %>% 
+  filter(ethnic == "white" & sex == "Male" & age >= 17 & age <= 23 & 
+           familiarity == min(familiarity[ethnic == "white" & sex == "Male" & age >= 17 & age <= 23]))
 
+subset_df
 ```
 
--   Example 2
+-   Example 2 Lab 3 q 11
 
 ```{r dvs-6-2}
+subset_df <- hiphop %>% 
+  filter(ethnic == "white" & sex == "Male" & age >= 17 & age <= 23 & 
+           familiarity == min(familiarity[ethnic == "white" & sex == "Male" & age >= 17 & age <= 23]))
 
+subset_df
 ```
 
 **DVS-7: I show creativity in my tables.**
 
--   Example 1
+-   Example 1 Lab 3 q 12
 
 ```{r dvs-7-1}
-
+hiphopClean |> 
+  filter(ethnic != "White" & sex == "Female") |> 
+  group_by(word) |>
+  summarize(mean_familiarity = mean(familiarity)) |>
+  slice_max(mean_familiarity)
 ```
 
 -   Example 2
 
 ```{r dvs-7-2}
-
+subjects <- hiphop_simplified |>
+  select(subj, age, sex, ethnic_group) |>
+  distinct(subj, .keep_all = TRUE)
+      
+subjects |> 
+  summary()
 ```
 
 ## Program Efficiency
 
 **PE-1: I can write concise code which does not repeat itself.**
 
--   using a single function call
+-   using a single function call Lab 5 q 4
 
 ```{r pe-1-one-call}
+grouped_data <- surveys %>% 
+  group_by(year, genus) %>% 
+  summarize(mean_weight = mean(weight), .groups = "drop")
 
+grouped_data$genus <- fct_reorder(grouped_data$genus, grouped_data$mean_weight)
+
+p <- ggplot(data = grouped_data, mapping = aes(x = year, y = mean_weight, color = genus)) +
+  geom_line() +
+  scale_x_continuous(limits = range(grouped_data$year), expand = c(0, 0)) +
+  scale_y_continuous(limits = range(grouped_data$mean_weight), expand = c(0, 0)) +
+  labs(x = "Year", y = "Mean Weight") +
+  ggtitle("Mean Weight Over Time")
+  theme_classic() +
+  theme(legend.position = "bottom")
+
+  
 ```
+
+We have not gotten to this point yet in class
 
 -   `across()`
 
@@ -396,6 +589,8 @@ I've done this in the following provided assignments:
 ## Revising My Thinking
 
 <!-- How did you revise your thinking throughout the course? How did you revise your thinking on the code examples you have provided in your portfolio? -->
+
+In general, when learning a new programming language like R, the process of revision is a critical aspect of the learning experience. As i have progressed through the intro to R programming course, i found my understanding of the language developing and I began to approach coding problems differently. For example, I started to appreciate the importance of clear and concise coding practices, and using functions and packages in more advanced ways. Additionally, i found my overall understanding of the language to increase and i feel that this is apparent in my portfolio. One thing that really allowed me to learn this quarter was the amount of feedback i was receiving for my work. In a lot of my past classes my grading feedback often came down to an auto grader that would tell me what cases id fail and that was it. this class has really allowed me to understand the problems i was making from a coding stand point as well as a conceptual standpoint.
 
 ## Extending My Thinking
 
