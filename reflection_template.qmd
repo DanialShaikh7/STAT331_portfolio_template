@@ -11,7 +11,22 @@ execute:
   echo: true
 ---
 
-[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an **90%**.
+[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be a **C-**.
+
+I feel like I deserve a C in this course.  I may not have performed at an exceptional
+level, but I did my best to complete all required coursework, participated in
+class discussions in and out of class, and met the minimum standards of the
+course.  Unfortunately, I feel I completely
+misgauged my workload coming into this quarter, I took too many courses, I am
+actively working in research for the CS department, spent the first half of the
+quarter securing an internship for this summer, and launched a web development
+startup. 
+
+All this led to this class being put on a back burner and this was very obvious in my work.  Ultimately
+my grade is up to your discretion and based on my overall performance and
+achievements in the course but I believe I did enough to meet the minimum
+requirements set out. None the less, I appreciate your efforts this quarter
+Professor and thankful for the plentiful feedback throughout it.
 
 [**Learning Objective Evidence:**]{.underline} In the code chunks below, provide code from a Lab or Challenge assignment where you believe you have demonstrated proficiency with the specified learning target. Be sure to specify **where** the code came from (e.g., Lab 4 Question 2).
 
@@ -22,7 +37,6 @@ execute:
 -   `csv`
 
 ```{r wd-1-csv}
-my_data <- read.csv("path/to/my/csv/file.csv")
 surveys <- read_csv(here("Week2","Lab2","surveys.csv"))
 
 ```
@@ -69,13 +83,10 @@ clean_avocado |>
 
 ```
 
--   character -- specifically a string - Lab 4 Q 6
+-   character -- specifically a string - Lab 9 q 9
 
 ```{r wd-3-string}
-cali <- avocado_clean |> 
-  filter(region %in% c("LosAngeles", "SanDiego", "Sacramento", "SanFrancisco"))
-
-
+  filter(Name %in% c("Allan", "Alan", "Allen"), Gender == "M", Year == 2000, State %in% c("PA", "CA"))
 ```
 
 -   factor Lab 4 Q7
@@ -109,11 +120,12 @@ plot(dist, xlab='Stopping distance (ft)')
 major_regions <- c("Plains", "Midsouth", "West", "SouthCentral", "Northeast", "Southeast")
 ```
 
--   factor Lab 4 Q 7
+-   factor Lab 5 Q1 before plotting i can change formats to factor
 
 ```{r wd-4-factor}
- Size = factor(Size, 
-                                     levels = c("Size_Small", "Size_Large", "Size_XL"),
+surveys <- surveys |> 
+  mutate(species = factor(species),
+         day_of_week = factor(surveys$day))
 ```
 
 -   date- Lab 4 Q 4
@@ -132,50 +144,53 @@ cali_joined <- left_join(cali_mutated, house_prices, by = "region")
 
 ```
 
--   I didn't use any of the rest of the join's in any of my work, but i found some examples through documentation.
+-   I didnt use any of these
 -   `right_join()`
 
 ```{r wd-5-right}
-df1 <- data.frame(id = c(1, 2, 3, 4, 5), name = c("Alice", "Bob", "Charlie", "Dave", "Eve"))
-df2 <- data.frame(id = c(2, 4, 6), age = c(25, 35, 45))
 
-df3 <- right_join(df1, df2, by = "id")
 ```
 
 -   `inner_join()`
 
 ```{r wd-5-inner}
-df3 <- inner_join(df1, df2, by = "id")
 ```
 
 -   `full_join()`
 
 ```{r wd-5-full}
-df3 <- full_join(df1, df2, by = "id")
-
 ```
 
 **WD-6: I can use filtering joins to filter rows from a dataframe.**
 
--   `semi_join()`
+-   `semi_join() I re-did the chunk of code for lab 4 Q 3 to do the exact same thing my code was already doing but instead of using group by i used semi-join for Lab 4`
 
 ```{r wd-6-semi}
-df3 <- semi_join(df1, df2, by = "id")
-
+clean_avocado |> 
+  semi_join(regions_major, by = "region") |>
+ filter(year == 2017 ,  
+          type == "organic") |>
 ```
 
--   `anti_join()`
+-   `anti_join() Also lab 4 q 5, but i implemented a anti_join`
 
 ```{r wd-6-anti}
-df3 <- anti_join(df1, df2, by = "id")
+mostAvo5 <- metro_regions |>
+    anti_join(metro_regions, by = "region") |>
+    group_by(region) |>
+    summarise(average_total_volume = mean(`Total Volume`)) |>
+    arrange(desc(average_total_volume)) |>
+    head(5) |>
+    pull(region)
 ```
 
 **WD-7: I can pivot dataframes from long to wide and visa versa**
 
--   `pivot_longer() PA4`
+-   `pivot_longer() Lab 4 Q7`
 
 ```{r wd-7-long}
-longer_df <- pivot_longer(wider_df, cols = 2:4, names_to = "year", values_to = "value")
+  pivot_longer(cols = c(`Small/Medium`,`Large`, `Extra Large`), 
+               names_to = "Size", values_to = "Volume") |>
 
 ```
 
@@ -191,7 +206,14 @@ longer_df <- pivot_longer(wider_df, cols = 2:4, names_to = "year", values_to = "
 
 **R-1: I can create professional looking, reproducible analyses using RStudio projects, Quarto documents, and the here package.**
 
-I've done this in the following provided assignments:
+I've done this in the following provided assignments
+
+```{r}
+surveys <- read_csv(here("Week2","Lab2","surveys.csv"))
+
+```
+
+:
 
 **R-2: I can write well documented and tidy code.**
 
@@ -241,26 +263,14 @@ white_vs_non_white_genre <- white_vs_non_white |>
 
 **R-3: I can write robust programs that are resistant to changes in inputs.**
 
--   Example 1 Challenge 3
+-   Example 1 Lab 3 q14 No matter what is in the hiphop set, it will filter down.
 
 ```{r r-3-1}
-male_vs_female <- hiphopClean |> 
-  group_by(sex, genre) |> 
-  summarise(mean_artists = mean(artists)) |> 
-  mutate(diff = male - female)
+subset_df <- hiphop %>% 
+  filter(ethnic == "white" & sex == "Male" & age >= 17 & age <= 23 & 
+           familiarity == min(familiarity[ethnic == "white" & sex == "Male" & age >= 17 & age <= 23]))
 
-white_vs_non_white <- hiphopClean |> 
-  group_by(race, genre) |>
-  summarise(mean_artists = mean(artists)) |>
-  mutate(diff = White - Non.White)
-
-male_vs_female_genre <- male_vs_female |> 
-  slice(1) |> 
-  select(genre)
-
-white_vs_non_white_genre <- white_vs_non_white |> 
-  slice(1) |> 
-  select(genre)
+subset_df
 ```
 
 -   Example 2 Lab 3 Q 11
@@ -272,11 +282,6 @@ hiphopClean |>
   summarize(mean_familiarity = mean(familiarity)) |> 
   slice_max(mean_familiarity)
 
-hiphopClean |> 
-  filter(age < 20) |> 
-  group_by(word) |> 
-  summarize(mean_familiarity = mean(familiarity)) |>
-  slice_min(mean_familiarity)
 ```
 
 These chunks of code is resistant to changes in inputs because it is a pipeline of data transformation functions that operate on the same input dataset no matter what is inside. Each function in the pipeline takes the output of the previous function and applies further transformations, ultimately producing a final output.
@@ -329,23 +334,20 @@ ggplot(data = surveys, mapping = aes(x = date, y = weight, color = genus)) +
 
 **DVS-2: I use plot modifications to make my visualization clear to the reader.**
 
--   Example 1 Lab 4 Q 4
+-   Example 1 Lab 4 Q 5
 
 ```{r dvs-2-1}
-grouped_data <- surveys %>% 
-  group_by(year, genus) %>% 
-  summarize(mean_weight = mean(weight), .groups = "drop")
+mostAvo5 <- metro_regions |>
+    group_by(region) |>
+    summarise(average_total_volume = mean(`Total Volume`)) |>
+    arrange(desc(average_total_volume)) |>
+    head(5) |>
+    pull(region)
 
-grouped_data$genus <- fct_reorder(grouped_data$genus, grouped_data$mean_weight)
+ggplot(data = avocado_clean |> filter(region %in% top5regions),
+       aes(x = region, y = `Total Volume`, fill = region)) +
+  geom_boxplot()
 
-p <- ggplot(data = grouped_data, mapping = aes(x = year, y = mean_weight, color = genus)) +
-  geom_line() +
-  scale_x_continuous(limits = range(grouped_data$year), expand = c(0, 0)) +
-  scale_y_continuous(limits = range(grouped_data$mean_weight), expand = c(0, 0)) +
-  labs(x = "Year", y = "Mean Weight") +
-  ggtitle("Mean Weight Over Time")
-  theme_classic() +
-  theme(legend.position = "bottom")
 ```
 
 -   Example 2 Lab 5 Q 3.1
@@ -422,14 +424,12 @@ hiphopClean |>
   slice_min(mean_familiarity)
 ```
 
--   Example 2 Lab 3 q 14
+-   Example 2 Lab 5 q 2
 
 ```{r dvs-5-2}
-subset_df <- hiphop %>% 
-  filter(ethnic == "white" & sex == "Male" & age >= 17 & age <= 23 & 
-           familiarity == min(familiarity[ethnic == "white" & sex == "Male" & age >= 17 & age <= 23]))
-
-subset_df
+grouped_data <- surveys %>% 
+  group_by(year, genus) %>% 
+  summarize(mean_weight = mean(weight), .groups = "drop")
 ```
 
 **DVS-6: I can create tables which make my summaries clear to the reader.**
@@ -481,36 +481,44 @@ subjects |>
 
 **PE-1: I can write concise code which does not repeat itself.**
 
--   using a single function call Lab 5 q 4
+-   using a single function call Lab 8 function to sing song
 
 ```{r pe-1-one-call}
-grouped_data <- surveys %>% 
-  group_by(year, genus) %>% 
-  summarize(mean_weight = mean(weight), .groups = "drop")
+sing_day <- function(dataset, num, phrase_col){
+  
+  # Step 1: Setup the intro line
+  num_word <- c("first",
+                "second", "third",
+                "fourth", "fifth",
+                "sixth", "seventh",
+                "eighth", "ninth",
+                "tenth", "eleventh",
+                "twelfth")[num]
+  
+  intro <- glue::glue("On the {num_word} day of Christmas, my true love sent to me:")
+  
+  # Step 2: Sing the gift phrases
+  phrases <- dataset %>%
+    slice_head(n = num) %>% #select the first lines
+    pull({{ phrase_col }})
+  
+  
+  song <- paste(intro)
+  if (num == 1) {
+    song <- paste(song, phrases, sep = " ")
+    return (song)
+  }
+  for (i in num:2) {
+    song <- paste(song, phrases[i], sep = " ")
+  }
+  song <- paste(song, "and", phrases[1], sep = " ")
+    
+  return(song)
+}
 
-grouped_data$genus <- fct_reorder(grouped_data$genus, grouped_data$mean_weight)
-
-p <- ggplot(data = grouped_data, mapping = aes(x = year, y = mean_weight, color = genus)) +
-  geom_line() +
-  scale_x_continuous(limits = range(grouped_data$year), expand = c(0, 0)) +
-  scale_y_continuous(limits = range(grouped_data$mean_weight), expand = c(0, 0)) +
-  labs(x = "Year", y = "Mean Weight") +
-  ggtitle("Mean Weight Over Time")
-  theme_classic() +
-  theme(legend.position = "bottom")
 
   
 ```
-
-We have not gotten to this point yet in class
-
--   `across()`
-
-```{r pe-1-across}
-
-```
-
--   `map()` functions
 
 ```{r pe-1-map-1}
 
@@ -518,58 +526,111 @@ We have not gotten to this point yet in class
 
 **PE-2: I can write functions to reduce repetition in my code.**
 
--   Example 1
+-   Example 1 lab 7 q3
 
 ```{r pe2-1}
-
+rescale_01 <- function(x){
+  if (!is.numeric(x)) {
+    stop("This is a non numeric vector, enter a numeric vector")
+  }
+  if (length(x) <= 1) {
+    stop("Input vector size must be greater than 1.")
+  }
+  (x - min(x, na.rm = TRUE)) / (max(x, na.rm = TRUE) - min(x, na.rm = TRUE))
+}
 ```
 
--   Example 2
+-   Example 2 lab 8 pluralize
 
 ```{r pe2-2}
-
+pluralize_gift <- function(gift){
+  if (stringr::str_ends(gift, "y")) {
+      gift <- stringr::str_replace(gift, "y$", "ies")
+    } else if (gift == "goose") {
+      gift <- "geese"
+    } else if (!stringr::str_ends(gift, "s")) {
+      gift <- paste0(gift, "s")  
+      # add "s" to the end of the string
+    }
+  return(gift)
+}
 ```
 
 **PE-3:I can use iteration to reduce repetition in my code.**
 
--   `across()`
+-   `across() I didnt use across`
 
 ```{r pe-3-across}
 
 ```
 
--   `map()` functions (Provide 2 Examples)
+Example 1
 
-```{r pe-3-map-1}
-
+```{r pe-3}
+  for (i in num:2) {
+    song <- paste(song, phrases[i], sep = " ")
+  }
+  song <- paste(song, "and", phrases[1], sep = " ")
+    
+  return(song)
+}
 ```
 
-```{r pe-3-map-2}
+Example 2 Lab 7 q 3
 
+```{r pe-3}
+rescale_column <- function(data, variables){
+  for (each in variables) {
+      data[[paste(each, "scaled")]] <- rescale_01(data[[each]])
+  }
+  return(data)
+}
 ```
 
 **PE-4: I can use modern tools when carrying out my analysis.**
 
--   Example 1
+-   Example 1 lab 9 Q 9
 
 ```{r pe-4-1}
+allan_alan_allen_2000_summary <- allan_alan_allen_2000 %>% 
+  group_by(State, Name) %>% 
+  summarize(Total = sum(Count), .groups = "drop")
+
+# Reshape data for table format
+library(tidyr)
+allan_alan_allen_2000_wide <- pivot_wider(allan_alan_allen_2000_summary, names_from = Name, values_from = Total, values_fill = 0)
+
+# Print table
+allan_alan_allen_2000_wide
 
 ```
 
--   Example 2
+-   Example 2 lab 7 q 2
 
 ```{r pe-4-2}
-
+# heatmap
+ggplot(missing_prop_df, aes(trip, section, fill = prop_missing)) +
+  geom_tile() +
+  scale_fill_gradient(low = "white", high = "red") +
+  facet_wrap(~ year, ncol = 3) +
+  xlab("Trip") +
+  ylab("Section") +
+  labs(fill = "Proportion\nMissing") +
+  theme_minimal()
 ```
 
 ## Data Simulation & Modeling
 
 **DSM-1: I can simulate data from a *variety* of probability models.**
 
--   Example 1
+-   Example 1 lab 9 q 4
 
 ```{r dsm-1-1}
+allison_lm <- lm(Total ~ Year, data = allison_yearly)
 
+# View summary of linear model
+summary(allison_lm)
+allison_lm
 ```
 
 -   Example 2
@@ -583,13 +644,11 @@ We have not gotten to this point yet in class
 -   Example 1
 
 ```{r dsm-2-1}
+allison_lm <- lm(Total ~ Year, data = allison_yearly)
 
-```
-
--   Example 2
-
-```{r dsm-2-2}
-
+# View summary of linear model
+summary(allison_lm)
+allison_lm
 ```
 
 ## Revising My Thinking
@@ -606,6 +665,6 @@ I often found my self extending my thinking when I was in the situation where i 
 
 ## Peer Support & Collaboration
 
-<!-- Include an image of feedback you gave that you are proud of (either in a peer review or in Discord) -->
+<!-- Include an image of feedback you gave that you are proud of (either in a peer review or in Discord) -->x\`
 
 ![I think this is a great example of good feedback from me to my peers because in most cases my classmates are doing a very good job with their code but they still have smaller aesthetic mishaps that they could fix in the future. I try to do my best helping my classmates outside of class when it comes to discord and within our practice activities I have always did my best to contribute to the group.](images/image-772281870.png)
