@@ -1,0 +1,176 @@
+---
+title: "Lab4"
+author: "Danial Shaikh"
+format:
+  html:
+    self-contained: true
+    code-tools: true
+    code-fold: true
+execute: 
+  echo: true
+  error: true
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(here)
+
+```
+
+```{r}
+
+# Code for question 2.0 
+avocado <- read_csv(here("Week4","avocado.csv"))
+avocado
+```
+
+Question 2.1
+
+The dataset contains information about avocado prices and sales in the United States from 2015 to 2018. The information includes the following variables:
+
+-   Date: the date of the observation
+
+-   AveragePrice: average price of a single avocado
+
+-   Total Volume: total number of avocados sold
+
+-   4046: total number of avocados with PLU 4046 sold
+
+-   4225: total number of avocados with PLU 4225 sold
+
+-   4770: total number of avocados with PLU 4770 sold
+
+-   Total Bags: total number of bags of avocados sold
+
+-   Small Bags: total number of small bags of avocados sold
+
+-   Large Bags: total number of large bags of avocados sold
+
+-   XLarge Bags: total number of extra large bags of avocados sold
+
+-   type: conventional or organic
+
+-   year: year of the observation
+
+-   region: geographical region in the US where the observation was made.
+
+```{r}
+avocado_clean <- avocado
+length(unique(avocado_clean$region))
+
+
+```
+
+```{r}
+avocado_clean |>
+  rename(
+    Small = `4046`, Large = `4225`,xtraLarge = `4770`)
+major_regions <- c("Plains", "Midsouth", "West", "SouthCentral", "Northeast", "Southeast")
+  
+major_regions <- avocado_clean |>
+  filter(region %in% major_regions) |>
+  rename(
+    Small = `4046`, Large = `4225`,xtraLarge = `4770`)
+
+
+metro_regions <- avocado_clean |>
+  filter(!(region %in% c(major_regions, "TotalUS")))|>
+  rename(
+    Small = `4046`, Large = `4225`,xtraLarge = `4770`)
+
+major_regions
+```
+
+\
+
+**3.** Which major region sold the most organic, small Hass avocados in 2017?\
+
+```{r}
+major_regions |> 
+  filter(type == "organic", year == 2017) |>
+  group_by(region) |>
+  summarize(tot_small_bags = sum(Small)) |>
+  arrange(desc(tot_small_bags)) |>
+  slice(1)
+```
+
+**4.** Use the `separate()` function to split the `Date` variable into year, month, and day. In which month is the highest volume of avocado sales?
+
+\
+
+```{r}
+avocado_clean |>
+  separate(Date, into = c("Year", "Month", "Day"), sep = "-") |>
+  group_by(Month) |>
+  summarize(tot_sales = sum(`Total Volume`)) |>
+  arrange(desc(tot_sales)) |>
+  slice(1)
+```
+
+**5.** Which metro area regions sold the most total avocados? Plot side-by-side boxplots of total volume for only the five regions with the highest averages for the `Total Volume` variable.
+
+**\
+**
+
+```{r}
+mostAvo5 <- metro_regions |>
+    group_by(region) |>
+    summarise(average_total_volume = mean(`Total Volume`)) |>
+    arrange(desc(average_total_volume)) |>
+    head(5) |>
+    pull(region)
+
+ggplot(data = avocado_clean |> filter(region %in% top5regions),
+       aes(x = region, y = `Total Volume`, fill = region)) +
+  geom_boxplot()
+
+```
+
+**6.** In which regions is the price of organic versus conventional avocados most different? Support your answer with a few summary statistics and a visualization.
+
+```{r}
+cali <- avocado_clean |> 
+  filter(region %in% c("LosAngeles", "SanDiego", "Sacramento", "SanFrancisco"))
+
+ggplot(data = cali, aes(x = region, y = AveragePrice, fill = type)) + 
+  geom_boxplot() +
+  ggtitle("Prices of Avocados in different California Regions")
+
+cali |> 
+  group_by(region, type) |>
+  summarise(average_price = mean(AveragePrice)) |>
+  pivot_wider(names_from = type, values_from = average_price, values_fill = 0) |>
+  mutate(
+    price_difference = organic - conventional
+  )
+```
+
+**\
+**
+
+```{r}
+cali
+```
+
+**7.** The following plot shows, for all four California regions, the proportion of the mean Hass avocado sales that are small, large, or extra large; conventional vs. organic. Recreate the plot.
+
+```{r}
+cali_grouped <- group_by(cali_avo, region, type)
+cali_summarized <- summarize_at(cali_grouped, vars(Size_Small, Size_Large, Size_XL), funs(mean))
+cali_gathered <- gather(cali_summarized, key = "Size", value = "Num.Sold", -region, -type)
+cali_mutated <- mutate(cali_gathered, 
+                       Size = factor(Size, 
+                                     levels = c("Size_Small", "Size_Large", "Size_XL"),
+                                     labels = c("Small", "Large", "Extra Large"))
+                      )
+cali_plotted <- ggplot(cali_mutated, aes(x = region, y = Num.Sold, fill = Size)) +
+                geom_col(position = "fill") + 
+                facet_wrap(~type)
+cali_plotted
+
+```
+
+```{r}
+
+```

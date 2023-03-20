@@ -1,0 +1,49 @@
+---
+title: "Challenge4"
+author: "Danial Shaikh"
+format:
+  html:
+    self-contained: true
+    code-tools: true
+    code-fold: true
+execute: 
+  echo: true
+  error: true
+---
+
+## Challenge 4
+
+```{r}
+# Load the necessary packages
+library(tidyverse)
+
+# Load the avocado dataset
+cali_avo <- read_csv(here("Week4","avocado.csv"))
+cali_avo|>
+    filter(region %in% c("LosAngeles", "SanDiego", "Sacramento", "SanFrancisco"))
+cali_avo
+
+# Group and summarize the avocado data
+cali_grouped <- group_by(cali_avo, region, type)
+cali_summarized <- summarize_at(cali_grouped, vars("4046", "4225", "4770"), funs(mean))
+cali_gathered <- gather(cali_summarized, key = "Size", value = "Num.Sold", -region, -type)
+cali_mutated <- mutate(cali_gathered, 
+                       Size = factor(Size, 
+                                     levels = c("4046", "4225", "4770"),
+                                     labels = c("Small", "Large", "Extra Large"))
+                      )
+
+# Load the house prices dataset
+house_prices <- data.frame(region = c("San Francisco", "Los Angeles", "San Diego", "Sacramento"),
+                           median_price = c(1000000, 800000, 600000, 700000))
+
+# Join the avocado and house prices data
+cali_joined <- left_join(cali_mutated, house_prices, by = "region")
+
+# Plot the relationship between house prices and avocado sales
+cali_plotted <- ggplot(cali_joined, aes(x = region, y =  , color = Size, group = Size)) +
+                geom_point() +
+                facet_wrap(~type)
+cali_plotted
+
+```

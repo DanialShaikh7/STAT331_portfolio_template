@@ -1,0 +1,90 @@
+---
+title: "Challenge2"
+author: "Danial Shaikh"
+format:
+  html:
+    self-contained: true
+    code-tools: true
+    code-fold: true
+execute: 
+  echo: true
+  error: true
+---
+
+# Lab Instructions
+
+The questions in this lab are noted with numbers and boldface. Each question will require you produce code, whether it is one line or multiple lines.
+
+This document is quite "plain," meaning it does not have any special formatting. As part of your demonstration of working with Quarto documents, I would encourage you to spice your documents up (e.g., declaring execution options, specifying how your figures should be output, formatting your code output).
+
+::: callout-caution
+## Seeking Help
+
+Part of learning to program is learning from a variety of resources. Thus, I expect you will use resources beyond the textbook used for this course. However, there is an important balance between copying someone else's code and ***using their code to learn***. The [course syllabus](https://docs.google.com/document/d/1-SSRp_mXFNgYiy4uW9tlcpxDpQH4OuMqK-Hh4v5AvZI/edit?usp=sharing) defines what is considered plagiarism in this course. Essentially, if you use external resources, I want to know about it. You can "inform" me of any resources you used by pasting the link to the resource in a code comment next to where you used that resource.
+
+You are permitted and encouraged to work with your peers as you complete the lab assignment, but you are expected to do your own work. Copying from each other is cheating, and letting people copy from you is also cheating. Don't do either of those things.
+:::
+
+[Download starter .qmd file here.](lab2.qmd)
+
+[Download the data - `surveys.csv` - file here.](surveys.csv)
+
+# Set-up
+
+In the code chunk below load in the packages necessary for your analysis. You should only need the tidyverse and here packages for this analysis, unless you decide to use additional resources.
+
+```{r setup}
+library(tidyverse)
+library(here)
+library(ggridges)
+
+```
+
+
+```{r data}
+# Code for question 1! 
+surveys <- read_csv(here("Week2","Lab2","surveys.csv"))
+
+```
+### **Question 13**
+
+Using the code you created in question 12, modify the x-axis and y-axis labels to describe what is being plotted. Be sure to include any necessary units!
+
+```{r}
+# Code for Challenge 1
+ ggplot(data = surveys)+geom_density_ridges(mapping = aes(x=weight, y=species,color=species))
+
+```
+
+Some people (and journals) prefer for boxplots to be stacked with a specific orientation! Let's practice changing the orientation of our boxplots.
+
+### **Question 14**
+
+Flip the orientation of your boxplots from question 10. If you created side-by-side boxplots (stacked horizontally), your boxplots should be stacked vertically. If you had vertically stacked boxplots, you should stack your boxplots horizontally!\
+*Hint: You **do not** need to add an additional layer.*
+
+```{r}
+# Code for question 14!
+ ggplot(data = surveys, mapping = aes(x=hindfoot_length,y= weight)) +  
+   geom_jitter(alpha=.2,color='tomato')+ facet_wrap(~species)+geom_boxplot(outlier.shape = NA)+labs(
+     title ='Weight to hindfoot comparison'
+   )+ xlab('length (mm)')+ylab('Weight(g)')
+
+#cord_flip
+```
+
+# Lab 1 Submission
+
+Once you have completed your lab you should upload **both** your rendered HTML file and your Quarto file to Canvas.
+
+**Code Visibility**
+
+All of your code needs to be visible! There should be no hidden code in your Quarto file! That means, there should be no `#| include: false` or `#| echo: false` options in your code chunks.
+
+::: callout-tip
+If you want to remove messages or warnings from your output, you can do this with `#| message: false` or `#| warning: false`options.
+:::
+
+**Visualization Visibility**
+
+By default Quarto documents do not produce self-contained HTML files. This is not what we want! Your HTML file **must** be self contained, so **all** the visualizations are included in the file. Please follow the Lab 1 instructions to ensure your HTML file is self contained.

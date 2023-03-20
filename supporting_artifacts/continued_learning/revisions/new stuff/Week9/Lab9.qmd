@@ -1,0 +1,179 @@
+---
+title: "Lab 8: The 12 Days of Christmas"
+subtitle: "Sing the Full Song"
+author: "Danial Shaikh"
+format: 
+  html:
+    self-contained: true
+    code-tools: true
+    toc: true
+    number-sections: true
+editor: source
+
+execute: 
+  error: true
+  echo: true
+  message: false
+  warning: false
+---
+
+1.  Make a summary table of the number of babies named \"Allison\" for each state and the sex of the baby. Specifically, the table should have the following qualities:
+
+-   each state should be its own row
+
+-   and each sex should have its own column
+
+-   if there were no babies born for that combination of state & sex there should be a 0 (not an `NA`)
+
+```{r}
+# Load required packages
+library(dplyr)
+library(tidyr)
+
+# Load data
+data <- read.csv("StateNames_A.csv")
+
+# Subset data for Allison
+allison_data <- data %>%
+  filter(Name == "Allison")
+
+# Group by state and sex, calculate total count of babies named Allison
+allison_summary <- allison_data %>%
+  group_by(State, Gender) %>%
+  summarize(Total = sum(Count))
+
+# Rename Gender to Sex at Birth
+allison_summary <- allison_summary %>%
+  rename(`Sex at Birth` = Gender)
+
+# Replace missing values with 0
+allison_summary <- allison_summary %>%
+  replace_na(list(Total = 0))
+
+# View summary table
+allison_summary
+
+```
+
+2.  You should have seen in the table above that \"Allison\" is a name given overwhelmingly to babies assigned \"female\" at birth. So, create a new dataset named `allison_f` which contains **only** the babies assigned `F`emale at birth.
+
+```{r}
+# Filter for babies assigned Female at birth
+allison_f <- allison_data %>%
+  filter(Gender == "F")
+
+# View new dataset
+allison_f
+
+
+```
+
+3.  Make a visualization showing how the popularity of the name \"Allison\" has changed over the years. To be clear, each year should have **one** observation--the total number of Allisons born that year.
+
+```{r}
+# Load required packages
+library(ggplot2)
+
+# Group by year and calculate total count of babies named Allison
+allison_yearly <- allison_data %>%
+  group_by(Year) %>%
+  summarize(Total = sum(Count))
+
+# Create line chart
+ggplot(allison_yearly, aes(x = Year, y = Total)) +
+  geom_line() +
+  labs(title = "Popularity of the Name Allison Over Time",
+       x = "Year",
+       y = "Total Number of Allisons")
+
+```
+
+## **4 Modeling the Number of Allisons**
+
+4.  Fit a linear model with the year as the explanatory variable, and the number of Allisons as the response. Similar to #3, each year should have **one** observation--the total number of Allisons born that year.
+
+```{r}
+# Fit linear model
+allison_lm <- lm(Total ~ Year, data = allison_yearly)
+
+# View summary of linear model
+summary(allison_lm)
+allison_lm
+```
+
+5. Write out the estimated regression equation.
+
+Total = -31016.46 + 15.19 \* Year
+
+6. Plot the *residuals* of the model, that is, the actual values minus the predicted values. Comment on the residuals - do you see any patterns?
+
+```{r}
+# Create residual plot
+plot(allison_yearly$Year, residuals(allison_lm), 
+     xlab = "Year", ylab = "Residuals", 
+     main = "Residual Plot for Allison Linear Model")
+
+```
+
+7.  What do you conclude from this model? Is my name not cool anymore?
+
+    From the linear model, we can conclude that the total number of babies named "Allison" has been increasing on average by 15.19 per year, after accounting for other factors. However, the rate of increase appears to have slowed down in recent years
+
+    ## **5 Spelling by State**
+
+    In middle school I was **so** upset with my parents for not naming me \"Allyson\". Past my pre-teen rebellion, I\'m happy with my name and am impressed when baristas spell it \"Allison\" instead of \"Alison\". But I don\'t have it as bad as my good friend Allan!
+
+    8.  Narrow the A name dataset (downloaded previously) down to only male-assigned babies named \"Allan\", \"Alan\", or \"Allen\". Make a plot comparing the popularity of these names over time.
+
+    ```{r}
+
+    # Load data
+    all_names <- read.csv("StateNames_A.csv")
+
+    # Filter for Allan, Alan, or Allen for male babies
+    allan_alan_allen_m <- all_names %>% 
+      filter(Name %in% c("Allan", "Alan", "Allen"), Gender == "M")
+
+    # Plot popularity over time
+    library(ggplot2)
+
+    ggplot(allan_alan_allen_m, aes(x = Year, y = Count, color = Name)) + 
+      geom_line() + 
+      labs(title = "Popularity of Allan, Alan, and Allen Over Time", 
+           x = "Year", y = "Count") + 
+      theme_bw()
+
+    ```
+
+    9.  In California, Allan\'s spelling of his name is the least common of the three but perhaps it\'s not such an unusual name for his home state of Pennsylvania. Compute the total number of babies born with each spelling of \"Allan\" in the year 2000, in Pennsylvania and in California. Specifically, the table should have the following qualities:
+
+        -   each spelling should be its own column
+
+        -   each state should have its own row
+
+        -   a `0` (not an `NA`) should be used to represent locations where there were no instances of these names
+
+        ```{r}
+
+
+        # Filter for Allan, Alan, or Allen for male babies in 2000 in Pennsylvania and California
+        allan_alan_allen_2000 <- all_names %>% 
+          filter(Name %in% c("Allan", "Alan", "Allen"), Gender == "M", Year == 2000, State %in% c("PA", "CA"))
+
+        # Summarize by spelling and state
+        allan_alan_allen_2000_summary <- allan_alan_allen_2000 %>% 
+          group_by(State, Name) %>% 
+          summarize(Total = sum(Count), .groups = "drop")
+
+        # Reshape data for table format
+        library(tidyr)
+        allan_alan_allen_2000_wide <- pivot_wider(allan_alan_allen_2000_summary, names_from = Name, values_from = Total, values_fill = 0)
+
+        # Print table
+        allan_alan_allen_2000_wide
+
+        ```
+
+        ```{r}
+
+        ```

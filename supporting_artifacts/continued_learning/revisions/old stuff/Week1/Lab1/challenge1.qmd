@@ -1,0 +1,63 @@
+---
+title: "Lab 1"
+author: "Danial Shaikh"
+format: 
+  html:
+    self-contained: true
+    code-fold: true
+    backgroundcolor: purple
+    
+    #changed background color
+execute:
+  #echo: false
+  error: true
+editor: visual
+---
+
+## Cars Dataset
+
+*This dataset contains information about \_\_the speed of cars and the distances taken to stop\_\_. The data was collected in \_\_the 1920s\_\_.*
+
+*It has \_50 observation\_\_ rows and \_\_2\_\_ variables.*
+
+```{r}
+
+summary(cars)
+
+```
+
+## Pressure Data Set
+
+```{r}
+
+#| fig-cap: 
+#|    -"Pressure of mercury in respect to the temperature"
+#| fig.align="center" 
+
+plot(pressure, xlab="Temperature(Degrees Celsius)",ylab="Pressure of mercury(mm)")
+
+```
+
+## Cars Data Visualizations
+
+```{r}
+#| layout-ncol: 2
+#| fig-cap: 
+#|    -"Plot of stopping distance" 
+#|    -"Car Speed(mph) in relation to car stopping distance
+dist<-cars[2]
+plot(dist, xlab='Stopping distance (ft)')
+plot (cars,xlab= 'Car Speed (mph)', ylab='Stopping distance (ft)')
+```
+
+The first chart shows the distributions of stopping distances
+
+the second chart shows stopping distances in respect to car speeds.
+
+there is a correlation between higher car speeds and longer stopping distances.
+
+## Improvements I would like to make
+
+-   I would like to change the colors of the dots to make them more viable
+
+-   I would like to add a trend line to better see correlation.
